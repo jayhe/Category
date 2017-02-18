@@ -1,11 +1,13 @@
-# Category
-------------
-[TOC]
-## 功能介绍
- 用类别扩展原生类的功能
+//
+//  NSNumber+Tool.h
+//  Tool
+//
+//  Created by hechao on 16/12/2.
+//  Copyright © 2016年 hc. All rights reserved.
+//
 
-* NSNumber+Tool类别
-```swift
+#import <Foundation/Foundation.h>
+
 @interface NSNumber (Tool)
 
 /**
@@ -40,6 +42,3 @@
 - (NSString *)toPrice;
 
 @end
-
-```
-------------------
