@@ -14,48 +14,24 @@
 
 #pragma mark - Custom Methods
 
-- (NSString *)timeWithFormat:(NSString *)format
+- (NSString *)hcf_toChineseCharacter
 {
-    return [self timeStringWithFormat:format];
+    return [self hcf_chineseCharacterFromNumber];
 }
 
-- (NSString *)toChineseCharacter
+- (NSString *)hcf_toLetter
 {
-    return [self chineseCharacterFromNumber];
+    return [self hcf_numberToLetter];
 }
 
-- (NSString *)toLetter
+- (NSString *)hcf_toPrice
 {
-    return [self numberToLetter];
-}
-
-- (NSString *)toPrice
-{
-    return [self numberToPrice];
+    return [self hcf_numberToPrice];
 }
 
 #pragma mark - Private Methods
 
-- (NSString *)timeStringWithFormat:(NSString *)format
-{
-    NSTimeInterval timeInterval = timeIntervalToShortStyle(self.longLongValue);
-    static NSDateFormatter *formatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [[NSDateFormatter alloc] init];
-        formatter.dateFormat = format?format:HC_DEFAULT_FORMAT;
-        formatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"zh-Hans_CN"];
-    });
-    //只有在format变了之后才重新设置
-    if (![format isEqualToString:formatter.dateFormat])
-    {
-        formatter.dateFormat = format?format:HC_DEFAULT_FORMAT;
-    }
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timeInterval];
-    return [formatter stringFromDate:date];
-}
-
-- (NSString *)chineseCharacterFromNumber
+- (NSString *)hcf_chineseCharacterFromNumber
 {
     if (self.integerValue == 0)
     {
@@ -73,20 +49,20 @@
     return [tmpString stringByReplacingOccurrencesOfString:@"〇" withString:@"零"];
 }
 
-- (NSString *)numberToLetter
+- (NSString *)hcf_numberToLetter
 {
     //0-A 1-B类推
     NSMutableString *returnLetter = [NSMutableString string];
-    [self reverseNumberToLetter:self.integerValue returnString:returnLetter];
+    [self hcf_reverseNumberToLetter:self.integerValue returnString:returnLetter];
     return returnLetter;
 }
 
-- (NSString *)numberToPrice
+- (NSString *)hcf_numberToPrice
 {
-    return [self decimalNumberWithPrice:self.floatValue];
+    return [self hcf_decimalNumberWithPrice:self.floatValue];
 }
 
-- (NSDecimalNumber *)decimalNumberWithString:(NSString *)string
+- (NSDecimalNumber *)hcf_decimalNumberWithString:(NSString *)string
 {
     NSDecimalNumber *subtotal = [NSDecimalNumber decimalNumberWithString:string];
     NSDecimalNumberHandler *roundUp = [NSDecimalNumberHandler decimalNumberHandlerWithRoundingMode:NSRoundDown
@@ -99,17 +75,17 @@
     return total;
 }
 
-- (NSString *)decimalNumberWithPrice:(float)price
+- (NSString *)hcf_decimalNumberWithPrice:(float)price
 {
     NSString *string = [NSString stringWithFormat:@"%.2f",price];
     
-    NSDecimalNumber *total = [self decimalNumberWithString:string];
+    NSDecimalNumber *total = [self hcf_decimalNumberWithString:string];
     NSString *priceStr = [NSString stringWithFormat:@"%@",total];
     return priceStr;
 }
 
 
-- (void)reverseNumberToLetter:(NSInteger)number returnString:(NSMutableString *)retrunString
+- (void)hcf_reverseNumberToLetter:(NSInteger)number returnString:(NSMutableString *)retrunString
 {
     NSString * const lettersStr = @"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     NSInteger letterCount = lettersStr.length;
@@ -117,15 +93,8 @@
     {
         NSInteger reminder = number%letterCount;
         [retrunString insertString:[lettersStr substringWithRange:NSMakeRange(reminder, 1)] atIndex:0];
-        [self reverseNumberToLetter:number/letterCount - 1 returnString:retrunString];
+        [self hcf_reverseNumberToLetter:number/letterCount - 1 returnString:retrunString];
     }
 }
-
-
-long long timeIntervalToShortStyle(long long interval)
-{
-    return @(interval).stringValue.length > 10?interval/1000:interval;
-}
-
 
 @end
